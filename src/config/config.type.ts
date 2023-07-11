@@ -78,6 +78,7 @@ export type TwitterConfig = {
 export type TopupConfig = {
   stripeApiSecretKey?: string;
   minaPrivateKey?: string;
+  minaPublicKey?: string;
 };
 
 export type AllConfigType = {

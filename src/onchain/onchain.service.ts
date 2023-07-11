@@ -5,22 +5,24 @@ import { AccountUpdate, Mina, PublicKey, PrivateKey } from 'snarkyjs';
 
 @Injectable()
 export class OnchainService {
-  private private_key: PrivateKey;
-  private public_key: PublicKey;
+  private privateKey: PrivateKey;
+  private publicKey: PublicKey;
 
   constructor(private configService: ConfigService<AllConfigType>) {
-    this.private_key = configService.get('topup.minaPrivateKey', {
+    this.privateKey = configService.get('topup.minaPrivateKey', {
       infer: true,
     }) as PrivateKey;
-    this.public_key = this.private_key.toPublicKey();
+    this.publicKey = configService.get('topup.minaPublicKey', {
+      infer: true,
+    }) as PublicKey;
   }
 
   async sendMina(to: PublicKey, amount: number): Promise<boolean> {
-    const tx = await Mina.transaction(this.public_key, () => {
-      const accountUpdate = AccountUpdate.createSigned(this.public_key);
+    const tx = await Mina.transaction(this.publicKey, () => {
+      const accountUpdate = AccountUpdate.createSigned(this.publicKey);
       accountUpdate.send({ to: to, amount: amount });
     });
-    await tx.sign([this.private_key]).send();
+    await tx.sign([this.privateKey]).send();
 
     return true;
   }
