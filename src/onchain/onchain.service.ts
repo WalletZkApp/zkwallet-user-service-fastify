@@ -17,6 +17,11 @@ export class OnchainService {
     ) as string;
     this.privateKey = PrivateKey.fromBase58(privateKeyFromConf);
     this.publicKey = this.privateKey.toPublicKey();
+
+    const berkeley = Mina.Network(
+      'https://proxy.berkeley.minaexplorer.com/graphql',
+    );
+    Mina.setActiveInstance(berkeley);
   }
 
   async sendMina(receiver: string, amount: number): Promise<boolean> {
