@@ -11,6 +11,7 @@ import facebookConfig from './config/facebook.config';
 import googleConfig from './config/google.config';
 import twitterConfig from './config/twitter.config';
 import appleConfig from './config/apple.config';
+import topupConfig from './config/topup.config';
 import path from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -45,6 +46,7 @@ import { TopupModule } from './topup/topup.module';
         googleConfig,
         twitterConfig,
         appleConfig,
+        topupConfig,
       ],
       envFilePath: ['.env'],
     }),
