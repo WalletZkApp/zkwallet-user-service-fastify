@@ -36,6 +36,13 @@ export class OnchainService {
 
     const transactionFee = 100_000_000;
 
+    const response = await fetchAccount({ publicKey: this.publicKey });
+    if (response.error) throw Error(response.error.statusText);
+    const { nonce, balance } = response.account;
+    console.log(
+      `Using fee payer account with nonce ${nonce}, balance ${balance}`,
+    );
+
     const tx = await Mina.transaction(
       { sender: this.publicKey, fee: transactionFee },
       () => {
@@ -50,13 +57,6 @@ export class OnchainService {
     // send the transaction to the graphql endpoint
     console.log('Sending the transaction...');
     await tx.sign([this.privateKey]).send();
-
-    const response = await fetchAccount({ publicKey: receiverPublicKey });
-    if (response.error) throw Error(response.error.statusText);
-    const { nonce, balance } = response.account;
-    console.log(
-      `Using fee payer account with nonce ${nonce}, balance ${balance}`,
-    );
 
     return true;
   }
