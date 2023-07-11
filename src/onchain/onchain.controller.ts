@@ -12,6 +12,7 @@ import { Roles } from 'src/roles/roles.decorator';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { OnchainService } from './onchain.service';
+import { OnChainDto } from './dto/onchain.dto';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
@@ -26,7 +27,7 @@ export class OnchainController {
 
   @Post()
   @HttpCode(HttpStatus.OK)
-  async sendMina(@Body() body: any) {
-    await this.onchainService.sendMina(body.to, body.amount);
+  async sendMina(@Body() data: OnChainDto) {
+    await this.onchainService.sendMina(data.publicKey, data.amount);
   }
 }
