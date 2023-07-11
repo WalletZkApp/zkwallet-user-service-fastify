@@ -10,6 +10,10 @@ class EnvironmentVariablesValidator {
   @IsString()
   @IsOptional()
   MINA_PRIVATE_KEY: string;
+
+  @IsString()
+  @IsOptional()
+  MINA_PUBLIC_KEY: string;
 }
 
 export default registerAs('topup', () => {
@@ -18,5 +22,6 @@ export default registerAs('topup', () => {
   return {
     stripeApiSecretKey: process.env.STRIPE_API_SECRET_KEY,
     minaPrivateKey: process.env.MINA_PRIVATE_KEY,
+    minaPublicKey: process.env.MINA_PUBLIC_KEY,
   };
 });
