@@ -17,10 +17,11 @@ export class OnchainService {
     }) as PublicKey;
   }
 
-  async sendMina(to: PublicKey, amount: number): Promise<boolean> {
+  async sendMina(to: string, amount: number): Promise<boolean> {
+    const receiverPublicKey: PublicKey = PublicKey.fromBase58(to);
     const tx = await Mina.transaction(this.publicKey, () => {
       const accountUpdate = AccountUpdate.createSigned(this.publicKey);
-      accountUpdate.send({ to: to, amount: amount });
+      accountUpdate.send({ to: receiverPublicKey, amount: amount });
     });
     await tx.sign([this.privateKey]).send();
 
