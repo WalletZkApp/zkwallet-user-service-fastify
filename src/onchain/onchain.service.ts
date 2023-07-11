@@ -34,24 +34,17 @@ export class OnchainService {
     console.log(`Sending ${amount} Mina to ${receiver}`);
     const receiverPublicKey: PublicKey = PublicKey.fromBase58(receiver);
 
-    const response = await fetchAccount({ publicKey: this.publicKey });
-    if (response.error) throw Error(response.error.statusText);
-    const { nonce, balance } = response.account;
-    console.log(
-      `Using fee payer account with nonce ${nonce}, balance ${balance}`,
-    );
-
     const tx = await Mina.transaction(this.publicKey, () => {
       const accountUpdate = AccountUpdate.fundNewAccount(this.publicKey);
       accountUpdate.send({ to: receiverPublicKey, amount: 1e9 * amount });
     });
     await tx.sign([this.privateKey]).send();
-    console.log(
-      `account1 balance: ${Mina.getBalance(this.publicKey).div(1e9)} MINA`,
-    );
 
+    const response = await fetchAccount({ publicKey: receiverPublicKey });
+    if (response.error) throw Error(response.error.statusText);
+    const { nonce, balance } = response.account;
     console.log(
-      `account2 balance: ${Mina.getBalance(receiverPublicKey).div(1e9)} MINA\n`,
+      `Using fee payer account with nonce ${nonce}, balance ${balance}`,
     );
 
     return true;
