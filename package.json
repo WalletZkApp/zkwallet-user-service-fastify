@@ -1,10 +1,10 @@
 {
-  "name": "nestjs-boilerplate",
-  "version": "0.0.1",
-  "description": "",
+  "name": "zkwallet-user-service",
+  "version": "0.1.0",
+  "description": "ZK WALLET user service using fastify and nestjs",
   "author": "",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "apache-2.0",
   "scripts": {
     "typeorm": "env-cmd ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "migration:generate": "npm run typeorm -- --dataSource=src/database/data-source.ts migration:generate",
