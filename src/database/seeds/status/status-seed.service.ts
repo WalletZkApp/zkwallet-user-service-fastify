@@ -24,6 +24,10 @@ export class StatusSeedService {
           id: StatusEnum.inactive,
           name: 'Inactive',
         }),
+        this.repository.create({
+          id: StatusEnum.inactive,
+          name: 'Pending',
+        }),
       ]);
     }
   }

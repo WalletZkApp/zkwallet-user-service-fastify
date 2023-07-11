@@ -22,7 +22,7 @@ export class UserSeedService {
     });
 
     if (!countAdmin) {
-    	await this.repository.save(
+      await this.repository.save(
         this.repository.create({
           firstName: 'Super',
           lastName: 'Admin',

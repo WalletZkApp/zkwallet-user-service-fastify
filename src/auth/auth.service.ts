@@ -54,9 +54,11 @@ export class AuthService {
     if (
       !user ||
       (user?.role &&
-        !(onlyAdmin ? [RoleEnum.admin] : [RoleEnum.user]).includes(
-          user.role.id,
-        ))
+        !(
+          onlyAdmin
+            ? [RoleEnum.admin]
+            : [RoleEnum.user, RoleEnum.guardian, RoleEnum.developer]
+        ).includes(user.role.id))
     ) {
       throw new HttpException(
         {
