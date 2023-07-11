@@ -46,17 +46,14 @@ export class OnchainService {
       accountUpdate.send({ to: receiverPublicKey, amount: 1e9 * amount });
     });
     await tx.sign([this.privateKey]).send();
-    this._printBalances(receiverPublicKey);
-
-    return true;
-  }
-
-  private _printBalances(account: PublicKey) {
     console.log(
       `account1 balance: ${Mina.getBalance(this.publicKey).div(1e9)} MINA`,
     );
+
     console.log(
-      `account2 balance: ${Mina.getBalance(account).div(1e9)} MINA\n`,
+      `account2 balance: ${Mina.getBalance(receiverPublicKey).div(1e9)} MINA\n`,
     );
+
+    return true;
   }
 }
