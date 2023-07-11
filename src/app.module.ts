@@ -31,6 +31,7 @@ import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
 import { GuardiansModule } from './guardian/guardians.module';
 import { TopupModule } from './topup/topup.module';
+import { OnchainModule } from './onchain/onchain.module';
 
 @Module({
   imports: [
@@ -93,6 +94,7 @@ import { TopupModule } from './topup/topup.module';
     HomeModule,
     GuardiansModule,
     TopupModule,
+    OnchainModule,
   ],
 })
 export class AppModule {}
