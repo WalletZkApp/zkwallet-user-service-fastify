@@ -9,7 +9,7 @@ export class TopupService {
   private stripe;
 
   constructor(private configService: ConfigService<AllConfigType>) {
-    const apiSecretKey = configService.get('stripe.apiSecretKey', {
+    const apiSecretKey = configService.get('topup.stripeApiSecretKey', {
       infer: true,
     }) as string;
     this.stripe = new Stripe(apiSecretKey, {

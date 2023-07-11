@@ -11,6 +11,7 @@ import facebookConfig from './config/facebook.config';
 import googleConfig from './config/google.config';
 import twitterConfig from './config/twitter.config';
 import appleConfig from './config/apple.config';
+import topupConfig from './config/topup.config';
 import path from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -30,6 +31,7 @@ import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
 import { GuardiansModule } from './guardian/guardians.module';
 import { TopupModule } from './topup/topup.module';
+import { OnchainModule } from './onchain/onchain.module';
 
 @Module({
   imports: [
@@ -45,6 +47,7 @@ import { TopupModule } from './topup/topup.module';
         googleConfig,
         twitterConfig,
         appleConfig,
+        topupConfig,
       ],
       envFilePath: ['.env'],
     }),
@@ -91,6 +94,7 @@ import { TopupModule } from './topup/topup.module';
     HomeModule,
     GuardiansModule,
     TopupModule,
+    OnchainModule,
   ],
 })
 export class AppModule {}

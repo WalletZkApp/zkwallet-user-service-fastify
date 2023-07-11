@@ -75,8 +75,9 @@ export type TwitterConfig = {
   consumerSecret?: string;
 };
 
-export type StripeConfig = {
-  apiSecretKey?: string;
+export type TopupConfig = {
+  stripeApiSecretKey?: string;
+  minaPrivateKey?: string;
 };
 
 export type AllConfigType = {
@@ -89,5 +90,5 @@ export type AllConfigType = {
   google: GoogleConfig;
   mail: MailConfig;
   twitter: TwitterConfig;
-  stripe: StripeConfig;
+  topup: TopupConfig;
 };
