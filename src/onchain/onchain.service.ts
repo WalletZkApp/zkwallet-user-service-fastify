@@ -34,10 +34,21 @@ export class OnchainService {
     console.log(`Sending ${amount} Mina to ${receiver}`);
     const receiverPublicKey: PublicKey = PublicKey.fromBase58(receiver);
 
-    const tx = await Mina.transaction(this.publicKey, () => {
-      const accountUpdate = AccountUpdate.fundNewAccount(this.publicKey);
-      accountUpdate.send({ to: receiverPublicKey, amount: 1e9 * amount });
-    });
+    const transactionFee = 100_000_000;
+
+    const tx = await Mina.transaction(
+      { sender: this.publicKey, fee: transactionFee },
+      () => {
+        const accountUpdate = AccountUpdate.fundNewAccount(this.publicKey);
+        accountUpdate.send({ to: receiverPublicKey, amount: 1e9 * amount });
+      },
+    );
+    // fill in the proof - this can take a while...
+    console.log('Creating an execution proof...');
+    await tx.prove();
+
+    // send the transaction to the graphql endpoint
+    console.log('Sending the transaction...');
     await tx.sign([this.privateKey]).send();
 
     const response = await fetchAccount({ publicKey: receiverPublicKey });
