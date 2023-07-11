@@ -29,6 +29,7 @@ import { AllConfigType } from './config/config.type';
 import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
 import { GuardiansModule } from './guardian/guardians.module';
+import { TopupModule } from './topup/topup.module';
 
 @Module({
   imports: [
@@ -89,6 +90,7 @@ import { GuardiansModule } from './guardian/guardians.module';
     MailerModule,
     HomeModule,
     GuardiansModule,
+    TopupModule,
   ],
 })
 export class AppModule {}
