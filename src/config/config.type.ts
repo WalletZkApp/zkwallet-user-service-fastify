@@ -75,6 +75,10 @@ export type TwitterConfig = {
   consumerSecret?: string;
 };
 
+export type StripeConfig = {
+  apiSecretKey?: string;
+};
+
 export type AllConfigType = {
   app: AppConfig;
   apple: AppleConfig;
@@ -85,4 +89,5 @@ export type AllConfigType = {
   google: GoogleConfig;
   mail: MailConfig;
   twitter: TwitterConfig;
+  stripe: StripeConfig;
 };
