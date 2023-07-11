@@ -27,7 +27,7 @@ export class User extends EntityHelper {
   // For "string | null" we need to use String type.
   // More info: https://github.com/typeorm/typeorm/issues/2567
   @Column({ type: String, unique: true, nullable: true })
-  @Expose({ groups: ['me', 'admin'] })
+  @Expose({ groups: ['me', 'admin', 'guardian', 'developer'] })
   email: string | null;
 
   @Column({ nullable: true })
@@ -52,12 +52,12 @@ export class User extends EntityHelper {
   }
 
   @Column({ default: AuthProvidersEnum.email })
-  @Expose({ groups: ['me', 'admin'] })
+  @Expose({ groups: ['me', 'admin', 'guardian', 'developer'] })
   provider: string;
 
   @Index()
   @Column({ type: String, nullable: true })
-  @Expose({ groups: ['me', 'admin'] })
+  @Expose({ groups: ['me', 'admin', 'guardian', 'developer'] })
   socialId: string | null;
 
   @Index()
@@ -87,6 +87,10 @@ export class User extends EntityHelper {
   @Index()
   @Exclude({ toPlainOnly: true })
   hash: string | null;
+
+  @Index()
+  @Column({ type: String, nullable: true })
+  walletAddress: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

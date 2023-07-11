@@ -41,5 +41,35 @@ export class RoleSeedService {
         }),
       );
     }
+
+    const countGuardian = await this.repository.count({
+      where: {
+        id: RoleEnum.guardian,
+      },
+    });
+
+    if (!countGuardian) {
+      await this.repository.save(
+        this.repository.create({
+          id: RoleEnum.guardian,
+          name: 'Guardian',
+        }),
+      );
+    }
+
+    const countDeveloper = await this.repository.count({
+      where: {
+        id: RoleEnum.developer,
+      },
+    });
+
+    if (!countDeveloper) {
+      await this.repository.save(
+        this.repository.create({
+          id: RoleEnum.developer,
+          name: 'Developer',
+        }),
+      );
+    }
   }
 }
