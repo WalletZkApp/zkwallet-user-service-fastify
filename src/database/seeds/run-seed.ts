@@ -12,6 +12,7 @@ const runSeed = async () => {
   await app.get(StatusSeedService).run();
   await app.get(UserSeedService).run();
 
+
   await app.close();
 };
 
