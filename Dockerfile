@@ -1,20 +1,32 @@
-FROM node:18.16.1-alpine
+FROM node:18.16.1-alpine as deployment
+
+WORKDIR /usr/src/app
 
 RUN apk add --no-cache bash
 RUN npm i -g @nestjs/cli typescript ts-node
 
-COPY package*.json /tmp/app/
-RUN cd /tmp/app && npm install
+COPY package*.json ./
 
-COPY . /usr/src/app
-RUN cp -a /tmp/app/node_modules /usr/src/app
-COPY ./wait-for-it.sh /opt/wait-for-it.sh
-COPY ./startup.dev.sh /opt/startup.dev.sh
-RUN sed -i 's/\r//g' /opt/wait-for-it.sh
-RUN sed -i 's/\r//g' /opt/startup.dev.sh
+RUN npm install
 
-WORKDIR /usr/src/app
-RUN cp env-example .env
+COPY . . 
+
 RUN npm run build
 
-CMD ["/opt/startup.dev.sh"]
+FROM node:18.16.1-alpine as production
+
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install --only=prod --ignore-scripts
+
+COPY . .
+
+COPY --from=deployment /usr/src/app/dist ./dist
+EXPOSE 3000
+CMD ["node", "dist/main"]
+

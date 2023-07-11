@@ -24,6 +24,18 @@ services:
     ports:
       - 8080:8080
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: hello@walletzk.app
+      PGADMIN_DEFAULT_PASSWORD: ${PQADMIN_PASSWORD}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
   # Uncomment to use redis
   # redis:
   #   image: redis:7-alpine
@@ -35,4 +47,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - ${APP_PORT}:${APP_PORT}
+      - 3000:3000
+
+volumes:
+  pgdata:
+  pgadmin-data:

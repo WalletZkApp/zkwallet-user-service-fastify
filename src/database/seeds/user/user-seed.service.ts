@@ -22,12 +22,28 @@ export class UserSeedService {
     });
 
     if (!countAdmin) {
-      await this.repository.save(
+    	await this.repository.save(
         this.repository.create({
           firstName: 'Super',
           lastName: 'Admin',
-          email: 'admin@example.com',
-          password: 'secret',
+          email: process.env.SUPER_ADMIN_EMAIL,
+          password: process.env.SUPER_ADMIN_PASSWORD,
+          role: {
+            id: RoleEnum.admin,
+            name: 'Admin',
+          },
+          status: {
+            id: StatusEnum.active,
+            name: 'Active',
+          },
+        }),
+      );
+      await this.repository.save(
+        this.repository.create({
+          firstName: 'mobile',
+          lastName: 'Admin',
+          email: process.env.MOBILE_ADMIN_EMAIL,
+          password: process.env.SUPER_ADMIN_PASSWORD,
           role: {
             id: RoleEnum.admin,
             name: 'Admin',
