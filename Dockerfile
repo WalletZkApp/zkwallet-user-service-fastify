@@ -1,32 +1,50 @@
-FROM node:18.16.1-alpine as deployment
+### Base
+FROM node:18.16.1-alpine as base
 
-WORKDIR /usr/src/app
+# Enable Node.js optimisation
+ENV NODE_ENV=production
+# Create application folder
+# WORKDIR can`t create folder with given user:group
+# So, we will create it ourselves
+RUN mkdir /app && chown -R node:node /app
+
+# Open port
+EXPOSE 3000
+
+# Set default folder to /app
+WORKDIR /app
+
+# Node.js image comes with user node so let`s switch
+USER node
+
+# Copy dependencies describing files
+COPY --chown=node:node package.json package-lock*.json ./
+
+# Install runtime dependencies
+RUN npm ci --prod
+
+
+### Builder
+FROM base as builder
 
 RUN apk add --no-cache bash
 RUN npm i -g @nestjs/cli typescript ts-node
 
-COPY package*.json ./
+# Install development dependencies (typings, etc.) require for build
+RUN npm install --only=development
 
-RUN npm install
+# Copy application source code
+COPY --chown=node:node . ./
 
-COPY . . 
-
+# Build application
 RUN npm run build
 
-FROM node:18.16.1-alpine as production
 
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-
-WORKDIR /usr/src/app
-
-COPY package*.json ./
-
-RUN npm install --only=prod --ignore-scripts
-
-COPY . .
-
-COPY --from=deployment /usr/src/app/dist ./dist
-EXPOSE 3000
-CMD ["node", "dist/main"]
-
+### Runtime
+FROM base as runtime
+# Copy runtime dependencies
+COPY --from=base /app/node_modules ./node_modules
+# Copy compiled application
+COPY --from=builder /app/dist ./dist
+# Setup entry point
+ENTRYPOINT [ "node", "dist/main.js" ]

@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -14,9 +16,6 @@ import { RolesGuard } from 'src/roles/roles.guard';
 import { OnchainService } from './onchain.service';
 import { OnChainDto } from './dto/onchain.dto';
 
-@ApiBearerAuth()
-@Roles(RoleEnum.admin)
-@UseGuards(AuthGuard('jwt'), RolesGuard)
 @ApiTags('OnChain')
 @Controller({
   path: 'onchain',
@@ -25,9 +24,24 @@ import { OnChainDto } from './dto/onchain.dto';
 export class OnchainController {
   constructor(private onchainService: OnchainService) {}
 
-  @Post()
+  @ApiBearerAuth()
+  @Roles(RoleEnum.admin)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Post('sendMina')
   @HttpCode(HttpStatus.OK)
   async sendMina(@Body() data: OnChainDto) {
     await this.onchainService.sendMina(data.publicKey, data.amount);
+  }
+
+  @Get('balance')
+  @HttpCode(HttpStatus.OK)
+  async getBalance(@Query('account') account: string) {
+    return await this.onchainService.getBalance(account);
+  }
+
+  @Get('accountIsNew')
+  @HttpCode(HttpStatus.OK)
+  async accountIsNew(@Query('account') account: string) {
+    return await this.onchainService.accountIsNew(account);
   }
 }
