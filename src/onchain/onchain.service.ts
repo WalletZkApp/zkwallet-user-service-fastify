@@ -6,6 +6,7 @@ import {
   PublicKey,
   PrivateKey,
   fetchAccount,
+  UInt64,
 } from 'snarkyjs';
 import { AllConfigType } from 'src/config/config.type';
 
@@ -30,23 +31,46 @@ export class OnchainService {
     this.publicKey = this.privateKey.toPublicKey();
   }
 
+  async getBalance(account: string): Promise<string> {
+    const accountPublicKey: PublicKey = PublicKey.fromBase58(account);
+    const response = await fetchAccount({ publicKey: accountPublicKey });
+    if (response.error) {
+      console.log('Error fetching account: ', response.error.statusText);
+    }
+    if (response.account) {
+      return response.account.balance.toString();
+    } else {
+      return '0';
+    }
+  }
+
+  async accountIsNew(account: string): Promise<boolean> {
+    const accountPublicKey: PublicKey = PublicKey.fromBase58(account);
+    const response = await fetchAccount({ publicKey: accountPublicKey });
+    if (response.error) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async sendMina(receiver: string, amount: number): Promise<boolean> {
     console.log(`Sending ${amount} Mina to ${receiver}`);
     const receiverPublicKey: PublicKey = PublicKey.fromBase58(receiver);
 
     const transactionFee = 100_000_000;
 
-    const response = await fetchAccount({ publicKey: this.publicKey });
-    if (response.error) throw Error(response.error.statusText);
-    const { nonce, balance } = response.account;
-    console.log(
-      `Using fee payer account with nonce ${nonce}, balance ${balance}`,
-    );
+    const accountIsNew: boolean = await this.accountIsNew(receiver);
 
     const tx = await Mina.transaction(
       { sender: this.publicKey, fee: transactionFee },
       () => {
-        const accountUpdate = AccountUpdate.fundNewAccount(this.publicKey);
+        let accountUpdate: AccountUpdate;
+        if (accountIsNew) {
+          accountUpdate = AccountUpdate.fundNewAccount(this.publicKey, 3);
+        } else {
+          accountUpdate = AccountUpdate.createSigned(this.publicKey);
+        }
         accountUpdate.send({ to: receiverPublicKey, amount: 1e9 * amount });
       },
     );
