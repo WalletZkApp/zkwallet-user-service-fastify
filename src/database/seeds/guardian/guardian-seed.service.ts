@@ -22,7 +22,6 @@ export class GuardianSeedService {
         state: 'NH',
         zip: '1234AB',
         country: 'Netherlands',
-        email: 'guardian1@walletzk.app',
         phonenumber: '123456789',
         website: 'https://www.walletzk.app',
         identityCommitment: '0x123456789',

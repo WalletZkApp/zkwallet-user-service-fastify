@@ -5,6 +5,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsOptional,
+  Length,
   MinLength,
   Validate,
 } from 'class-validator';
@@ -28,6 +29,11 @@ export class CreateUserDto {
   @MinLength(6)
   @IsOptional()
   password?: string;
+
+  @ApiProperty()
+  @Length(6)
+  @IsOptional()
+  pin?: string;
 
   provider?: string;
 

@@ -61,6 +61,8 @@ class CreateGuardianDto {
     message: 'walletAddressAlreadyExists',
   })
   walletAddress?: string | null;
+
+  isApproved?: boolean | false;
 }
 
 class UpdateGuardianDto {

@@ -74,7 +74,10 @@ export class AuthController {
   async confirmEmail(
     @Body() confirmEmailDto: AuthConfirmEmailDto,
   ): Promise<void> {
-    return this.service.confirmEmail(confirmEmailDto.hash);
+    return this.service.confirmEmail(
+      confirmEmailDto.email,
+      confirmEmailDto.hash,
+    );
   }
 
   @Post('forgot/password')

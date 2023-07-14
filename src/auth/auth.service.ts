@@ -242,6 +242,8 @@ export class AuthService {
       .update(randomStringGenerator())
       .digest('hex');
 
+    const pin: string = this.getRandomNumber('0123456789', 6).toString();
+
     await this.usersService.create({
       ...dto,
       email: dto.email,
@@ -251,20 +253,21 @@ export class AuthService {
       status: {
         id: StatusEnum.inactive,
       } as Status,
+      pin: pin,
       hash,
     });
 
     await this.mailService.userSignUp({
       to: dto.email,
       data: {
-        hash,
+        hash: pin,
       },
     });
   }
 
-  async confirmEmail(hash: string): Promise<void> {
+  async confirmEmail(email: string, pin: string): Promise<void> {
     const user = await this.usersService.findOne({
-      hash,
+      email,
     });
 
     if (!user) {
@@ -277,7 +280,22 @@ export class AuthService {
       );
     }
 
+    const isValidPin = await bcrypt.compare(pin, user.pin);
+
+    if (!isValidPin) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: {
+            password: 'incorrectPin',
+          },
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
     user.hash = null;
+    user.pin = '';
     user.status = plainToClass(Status, {
       id: StatusEnum.active,
     });
@@ -500,4 +518,9 @@ export class AuthService {
       tokenExpires,
     };
   }
+
+  getRandomNumber = (chars, len) =>
+    [...Array(len)]
+      .map(() => chars[Math.floor(Math.random() * chars.length)])
+      .join('');
 }

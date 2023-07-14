@@ -73,7 +73,34 @@ export class UserSeedService {
           password: 'secret',
           role: {
             id: RoleEnum.user,
-            name: 'Admin',
+            name: 'User',
+          },
+          status: {
+            id: StatusEnum.active,
+            name: 'Active',
+          },
+        }),
+      );
+    }
+
+    const countGuardian = await this.repository.count({
+      where: {
+        role: {
+          id: RoleEnum.guardian,
+        },
+      },
+    });
+
+    if (!countGuardian) {
+      await this.repository.save(
+        this.repository.create({
+          firstName: null,
+          lastName: null,
+          email: 'guardian1@walletzk.app',
+          password: 'secret',
+          role: {
+            id: RoleEnum.guardian,
+            name: 'Guardian',
           },
           status: {
             id: StatusEnum.active,

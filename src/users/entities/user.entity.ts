@@ -34,6 +34,13 @@ export class User extends EntityHelper {
   @Exclude({ toPlainOnly: true })
   password: string;
 
+  @Column({ nullable: true })
+  @Exclude({ toPlainOnly: true })
+  pin: string;
+
+  @Exclude({ toPlainOnly: true })
+  public previousPin: string;
+
   @Exclude({ toPlainOnly: true })
   public previousPassword: string;
 
@@ -48,6 +55,15 @@ export class User extends EntityHelper {
     if (this.previousPassword !== this.password && this.password) {
       const salt = await bcrypt.genSalt();
       this.password = await bcrypt.hash(this.password, salt);
+    }
+  }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async setPin() {
+    if (this.previousPin !== this.pin && this.pin) {
+      const salt = await bcrypt.genSalt();
+      this.pin = await bcrypt.hash(this.pin, salt);
     }
   }
 
