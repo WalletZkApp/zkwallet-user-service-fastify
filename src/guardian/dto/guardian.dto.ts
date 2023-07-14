@@ -23,6 +23,13 @@ class CreateGuardianDto {
   })
   registrationNumber: string;
 
+  @ApiProperty()
+  @IsNotEmpty()
+  @Validate(IsNotExist, ['Guardian'], {
+    message: 'companyNameAlreadyExists',
+  })
+  companyName: string;
+
   displayName?: string;
   description?: string;
   address?: string;

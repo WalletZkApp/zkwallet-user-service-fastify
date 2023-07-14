@@ -1,21 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
+
 import {
   AccountUpdate,
   Mina,
   PublicKey,
   PrivateKey,
   fetchAccount,
-  UInt64,
 } from 'snarkyjs';
 import { AllConfigType } from 'src/config/config.type';
+import { map } from 'rxjs';
 
 @Injectable()
 export class OnchainService {
   private privateKey: PrivateKey;
   private publicKey: PublicKey;
 
-  constructor(private configService: ConfigService<AllConfigType>) {
+  constructor(
+    private http: HttpService,
+    private configService: ConfigService<AllConfigType>,
+  ) {
     const privateKeyFromConf: string = configService.get(
       'topup.minaPrivateKey',
       {
@@ -61,27 +66,37 @@ export class OnchainService {
     const transactionFee = 100_000_000;
 
     const accountIsNew: boolean = await this.accountIsNew(receiver);
+    if (accountIsNew) {
+      // TODO: This is only available on testnet
+      this.getMinaFromFaucet(receiver);
+      return true;
+    } else {
+      const tx = await Mina.transaction(
+        { sender: this.publicKey, fee: transactionFee },
+        () => {
+          const accountUpdate: AccountUpdate = AccountUpdate.createSigned(
+            this.publicKey,
+          );
+          accountUpdate.send({ to: receiverPublicKey, amount: 1e9 * amount });
+        },
+      );
+      // fill in the proof - this can take a while...
+      console.log('Creating an execution proof...');
+      await tx.prove();
 
-    const tx = await Mina.transaction(
-      { sender: this.publicKey, fee: transactionFee },
-      () => {
-        let accountUpdate: AccountUpdate;
-        if (accountIsNew) {
-          accountUpdate = AccountUpdate.fundNewAccount(this.publicKey, 3);
-        } else {
-          accountUpdate = AccountUpdate.createSigned(this.publicKey);
-        }
-        accountUpdate.send({ to: receiverPublicKey, amount: 1e9 * amount });
-      },
-    );
-    // fill in the proof - this can take a while...
-    console.log('Creating an execution proof...');
-    await tx.prove();
+      // send the transaction to the graphql endpoint
+      console.log('Sending the transaction...');
+      await tx.sign([this.privateKey]).send();
 
-    // send the transaction to the graphql endpoint
-    console.log('Sending the transaction...');
-    await tx.sign([this.privateKey]).send();
+      return true;
+    }
+  }
 
-    return true;
+  // write a function that do http request to faucet (https://faucet.minaprotocol.com/?address=account)
+  // and return true if success
+  getMinaFromFaucet(account: string) {
+    return this.http
+      .get(`https://faucet.minaprotocol.com/?address=${account}`)
+      .pipe(map((response) => console.log(response.data)));
   }
 }

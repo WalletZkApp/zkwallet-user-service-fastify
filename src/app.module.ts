@@ -32,6 +32,7 @@ import { MailerModule } from './mailer/mailer.module';
 import { GuardiansModule } from './guardian/guardians.module';
 import { TopupModule } from './topup/topup.module';
 import { OnchainModule } from './onchain/onchain.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -95,6 +96,7 @@ import { OnchainModule } from './onchain/onchain.module';
     GuardiansModule,
     TopupModule,
     OnchainModule,
+    StripeModule,
   ],
 })
 export class AppModule {}
