@@ -280,6 +280,26 @@ export class AuthService {
       );
     }
 
+    if (user.status?.id === StatusEnum.active) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: `alreadyConfirmed`,
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
+    if (user.pin === '') {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNPROCESSABLE_ENTITY,
+          errors: `pin already used`,
+        },
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+
     const isValidPin = await bcrypt.compare(pin, user.pin);
 
     if (!isValidPin) {
