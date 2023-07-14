@@ -12,6 +12,7 @@ import { IsExist } from 'src/utils/validators/is-exists.validator';
 import { IsNotExist } from 'src/utils/validators/is-not-exists.validator';
 import { SessionModule } from 'src/session/session.module';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { GuardiansModule } from 'src/guardian/guardians.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     PassportModule,
     MailModule,
     JwtModule.register({}),
+    GuardiansModule,
   ],
   controllers: [AuthController],
   providers: [

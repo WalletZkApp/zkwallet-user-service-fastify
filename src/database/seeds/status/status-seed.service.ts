@@ -25,7 +25,7 @@ export class StatusSeedService {
           name: 'Inactive',
         }),
         this.repository.create({
-          id: StatusEnum.inactive,
+          id: StatusEnum.pending,
           name: 'Pending',
         }),
       ]);

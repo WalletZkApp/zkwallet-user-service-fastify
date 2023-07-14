@@ -7,6 +7,7 @@ import {
   IsNotEmpty,
   Validate,
   IsOptional,
+  MinLength,
 } from 'class-validator';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
 import { lowerCaseTransformer } from 'src/utils/transformers/lower-case.transformer';
@@ -38,15 +39,6 @@ class CreateGuardianDto {
   zip?: string;
   country?: string;
 
-  @ApiProperty({ example: 'test1@example.com' })
-  @Transform(lowerCaseTransformer)
-  @IsNotEmpty()
-  @Validate(IsNotExist, ['Guardian'], {
-    message: 'emailAlreadyExists',
-  })
-  @IsEmail()
-  email: string;
-
   @ApiProperty()
   @IsNumberString()
   phonenumber: string;
@@ -60,14 +52,14 @@ class CreateGuardianDto {
   @IsUrl()
   website: string;
 
-  @ApiProperty({ type: Status })
-  @Validate(IsExist, ['Status', 'id'], {
-    message: 'statusNotExists',
-  })
-  status?: Status;
-
   identityCommitment?: string;
   hash?: string | null;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Validate(IsNotExist, ['Guardian'], {
+    message: 'walletAddressAlreadyExists',
+  })
   walletAddress?: string | null;
 }
 
@@ -130,10 +122,6 @@ class UpdateGuardianDto {
   @IsUrl()
   website: string;
 
-  @ApiProperty({ type: Status })
-  @IsOptional()
-  status?: Status;
-
   @ApiProperty()
   @IsOptional()
   identityCommitment?: string;
@@ -146,67 +134,3 @@ class UpdateGuardianDto {
   @IsOptional()
   walletAddress?: string;
 }
-
-// class UpdateGuardianDto {
-//   @ApiProperty()
-//   @IsOptional()
-//   registrationNumber?: string;
-
-//   @ApiProperty()
-//   @IsOptional()
-//   displayName?: string;
-
-//   @ApiProperty()
-//   @IsOptional()
-//   description?: string;
-
-//   @ApiProperty()
-//   @IsOptional()
-//   address?: string;
-
-//   @ApiProperty()
-//   @IsOptional()
-//   city?: string;
-
-//   @ApiProperty()
-//   @IsOptional()
-//   state?: string;
-
-//   @ApiProperty()
-//   @IsOptional()
-//   zip?: string;
-
-//   @ApiProperty()
-//   @IsOptional()
-//   country?: string;
-
-//   @ApiProperty({ example: 'test1@example.com' })
-//   @Transform(lowerCaseTransformer)
-//   @IsOptional()
-//   @Validate(IsNotExist, ['Guardian'], {
-//     message: 'emailAlreadyExists',
-//   })
-//   @IsEmail()
-//   email?: string | null;
-
-//   @ApiProperty()
-//   @IsNumberString()
-//   @IsOptional()
-//   phonenumber?: string;
-
-//   @ApiProperty()
-//   @IsUrl()
-//   @IsOptional()
-//   website?: string;
-
-//   @ApiProperty({ type: Status })
-//   @Validate(IsExist, ['Status', 'id'], {
-//     message: 'statusNotExists',
-//   })
-//   @IsOptional()
-//   status?: Status;
-
-//   identityCommitment?: string | null;
-//   hash?: string | null;
-//   walletAddress?: string | null;
-// }

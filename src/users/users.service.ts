@@ -35,6 +35,16 @@ export class UsersService {
     });
   }
 
+  // use by onchain module to check if user is exist
+  async isExistByWalletAddress(walletAddress: string): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: {
+        walletAddress,
+      },
+    });
+    return user !== null;
+  }
+
   update(id: User['id'], payload: DeepPartial<User>): Promise<User> {
     return this.usersRepository.save(
       this.usersRepository.create({

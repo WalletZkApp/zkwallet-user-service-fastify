@@ -31,6 +31,9 @@ import { SessionService } from 'src/session/session.service';
 import { JwtRefreshPayloadType } from './strategies/types/jwt-refresh-payload.type';
 import { Session } from 'src/session/entities/session.entity';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
+import { GuardiansService } from 'src/guardian/guardians.service';
+import { CreateGuardianDto } from 'src/guardian/dto/guardian.dto';
+import { AuthRegisterGuardianLoginDto } from './dto/auth-register-guardian-login.dto';
 
 @Injectable()
 export class AuthService {
@@ -41,6 +44,7 @@ export class AuthService {
     private sessionService: SessionService,
     private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
+    private guardianService: GuardiansService,
   ) {}
 
   async validateLogin(
@@ -196,6 +200,40 @@ export class AuthService {
       tokenExpires,
       user,
     };
+  }
+
+  async registerGuardian(dto: AuthRegisterGuardianLoginDto): Promise<void> {
+    const userDto: AuthRegisterLoginDto = {
+      email: dto.email,
+      password: dto.password,
+      firstName: null,
+      lastName: null,
+      role: {
+        id: RoleEnum.guardian,
+      } as Role,
+      status: {
+        id: StatusEnum.active,
+      } as Status,
+    };
+    // also register as user with guardian role
+    await this.register(userDto);
+
+    const createGuardianDto: CreateGuardianDto = {
+      registrationNumber: dto.registrationNumber,
+      companyName: dto.companyName,
+      displayName: dto.displayName,
+      description: dto.description,
+      address: dto.address,
+      city: dto.city,
+      state: dto.state,
+      zip: dto.zip,
+      country: dto.country,
+      phonenumber: dto.phonenumber,
+      website: dto.website,
+      identityCommitment: dto.identityCommitment,
+      walletAddress: dto.walletAddress,
+    };
+    await this.guardianService.create(createGuardianDto);
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {
