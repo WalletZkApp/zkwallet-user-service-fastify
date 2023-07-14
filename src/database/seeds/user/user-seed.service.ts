@@ -43,7 +43,7 @@ export class UserSeedService {
           firstName: 'mobile',
           lastName: 'Admin',
           email: process.env.MOBILE_ADMIN_EMAIL,
-          password: process.env.SUPER_ADMIN_PASSWORD,
+          password: process.env.MOBILE_ADMIN_PASSWORD,
           role: {
             id: RoleEnum.admin,
             name: 'Admin',

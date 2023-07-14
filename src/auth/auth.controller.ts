@@ -23,6 +23,7 @@ import { AuthRegisterLoginDto } from './dto/auth-register-login.dto';
 import { LoginResponseType } from './types/login-response.type';
 import { User } from '../users/entities/user.entity';
 import { NullableType } from '../utils/types/nullable.type';
+import { AuthRegisterGuardianLoginDto } from './dto/auth-register-guardian-login.dto';
 
 @ApiTags('Auth')
 @Controller({
@@ -52,6 +53,14 @@ export class AuthController {
     @Body() loginDTO: AuthEmailLoginDto,
   ): Promise<LoginResponseType> {
     return this.service.validateLogin(loginDTO, true);
+  }
+
+  @Post('guardian/email/register')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async registerGuardian(
+    @Body() createGuardianDto: AuthRegisterGuardianLoginDto,
+  ): Promise<void> {
+    return this.service.registerGuardian(createGuardianDto);
   }
 
   @Post('email/register')

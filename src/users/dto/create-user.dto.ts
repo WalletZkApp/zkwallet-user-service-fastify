@@ -26,6 +26,7 @@ export class CreateUserDto {
 
   @ApiProperty()
   @MinLength(6)
+  @IsOptional()
   password?: string;
 
   provider?: string;
@@ -33,11 +34,11 @@ export class CreateUserDto {
   socialId?: string | null;
 
   @ApiProperty({ example: 'John' })
-  @IsNotEmpty()
+  @IsOptional()
   firstName: string | null;
 
   @ApiProperty({ example: 'Doe' })
-  @IsNotEmpty()
+  @IsOptional()
   lastName: string | null;
 
   @ApiProperty({ type: () => FileEntity })

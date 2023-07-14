@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { UsersService } from 'src/users/users.service';
+
 import {
   AccountUpdate,
   Mina,
   PublicKey,
   PrivateKey,
   fetchAccount,
-  UInt64,
 } from 'snarkyjs';
 import { AllConfigType } from 'src/config/config.type';
 
@@ -15,7 +16,10 @@ export class OnchainService {
   private privateKey: PrivateKey;
   private publicKey: PublicKey;
 
-  constructor(private configService: ConfigService<AllConfigType>) {
+  constructor(
+    private configService: ConfigService<AllConfigType>,
+    private usersService: UsersService,
+  ) {
     const privateKeyFromConf: string = configService.get(
       'topup.minaPrivateKey',
       {
@@ -55,6 +59,20 @@ export class OnchainService {
   }
 
   async sendMina(receiver: string, amount: number): Promise<boolean> {
+    // check if amount is > 0
+    if (amount <= 0) {
+      return false;
+    }
+
+    //check if receiver is a valid account
+    const accountExists = await this.usersService.isExistByWalletAddress(
+      receiver,
+    );
+    if (!accountExists) {
+      console.log('Account does not exist: ', receiver);
+      return false;
+    }
+
     console.log(`Sending ${amount} Mina to ${receiver}`);
     const receiverPublicKey: PublicKey = PublicKey.fromBase58(receiver);
 

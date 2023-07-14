@@ -8,8 +8,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { TopUpDto } from './dto/topup.dto';
-import { TopupService } from './topup.service';
+import { PaymentRequestBody } from '../stripe/types/PaymentRequestBody';
+import { StripeService } from './stripe.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/roles/roles.decorator';
 import { RoleEnum } from 'src/roles/roles.enum';
@@ -19,19 +19,22 @@ import { RolesGuard } from 'src/roles/roles.guard';
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@ApiTags('Topups')
+@ApiTags('Stripe')
 @Controller({
-  path: 'topup',
+  path: 'stripe',
   version: '1',
 })
-export class TopupController {
-  constructor(private topupService: TopupService) {}
+export class StripeController {
+  constructor(private stripeService: StripeService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  topup(@Res() response: Response, @Body() topUpDto: TopUpDto) {
-    this.topupService
-      .topup(topUpDto.account, topUpDto.amount)
+  createPayments(
+    @Res() response: Response,
+    @Body() paymentRequestBody: PaymentRequestBody,
+  ) {
+    this.stripeService
+      .createPayment(paymentRequestBody)
       .then((res) => {
         response.status(HttpStatus.CREATED).json(res);
       })

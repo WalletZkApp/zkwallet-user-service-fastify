@@ -10,5 +10,6 @@ import { IsNotExist } from 'src/utils/validators/is-not-exists.validator';
   imports: [TypeOrmModule.forFeature([Guardian])],
   providers: [IsExist, IsNotExist, GuardiansService],
   controllers: [GuardiansController],
+  exports: [GuardiansService],
 })
 export class GuardiansModule {}

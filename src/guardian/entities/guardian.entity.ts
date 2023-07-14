@@ -17,6 +17,9 @@ export class Guardian {
   @Column({ type: String, unique: true, nullable: false })
   registrationNumber: string;
 
+  @Column({ type: String, unique: true, nullable: false })
+  companyName: string;
+
   @Column({ type: String, nullable: true })
   displayName: string;
 
