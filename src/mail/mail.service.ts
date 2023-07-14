@@ -20,19 +20,17 @@ export class MailService {
     let text1: MaybeType<string>;
     let text2: MaybeType<string>;
     let text3: MaybeType<string>;
-    let text4: MaybeType<string>;
 
     if (i18n) {
-      [emailConfirmTitle, text1, text2, text3, text4] = await Promise.all([
+      [emailConfirmTitle, text1, text2, text3] = await Promise.all([
         i18n.t('common.confirmEmail'),
         i18n.t('confirm-email.text1'),
         i18n.t('confirm-email.text2'),
         i18n.t('confirm-email.text3'),
-        i18n.t('confirm-email.text4'),
       ]);
     }
 
-    text4 = text4 + `${mailData.data.hash}`;
+    text3 = text3 + ' ' + mailData.data.hash;
 
     await this.mailerService.sendMail({
       to: mailData.to,
@@ -57,13 +55,12 @@ export class MailService {
           infer: true,
         })}${this.configService.get('app.apiAuthEmailConfirmApi', {
           infer: true,
-        })}/?email=${mailData.to}&hash=${mailData.data.hash}`,
+        })}?email=${mailData.to}&hash=${mailData.data.hash}`,
         actionTitle: emailConfirmTitle,
         app_name: this.configService.get('app.name', { infer: true }),
         text1,
         text2,
         text3,
-        text4,
       },
     });
   }
