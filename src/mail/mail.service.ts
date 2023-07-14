@@ -32,7 +32,7 @@ export class MailService {
       ]);
     }
 
-    text4 = `text4? ${mailData.data.hash}`;
+    text4 = text4 + `${mailData.data.hash}`;
 
     await this.mailerService.sendMail({
       to: mailData.to,

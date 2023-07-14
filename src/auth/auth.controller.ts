@@ -69,7 +69,7 @@ export class AuthController {
     return this.service.register(createUserDto);
   }
 
-  @Post('email/confirm')
+  @Get('email/confirm')
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmEmail(
     @Body() confirmEmailDto: AuthConfirmEmailDto,
