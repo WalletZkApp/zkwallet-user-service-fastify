@@ -62,4 +62,5 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   hash?: string | null;
 
   walletAddress?: string | null;
+  profileUrl?: string | null;
 }

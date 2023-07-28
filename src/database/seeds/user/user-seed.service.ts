@@ -81,6 +81,23 @@ export class UserSeedService {
           },
         }),
       );
+
+      await this.repository.save(
+        this.repository.create({
+          firstName: 'Test',
+          lastName: 'Tester',
+          email: 'tester@gmail.com',
+          password: 'test1234',
+          role: {
+            id: RoleEnum.user,
+            name: 'User',
+          },
+          status: {
+            id: StatusEnum.active,
+            name: 'Active',
+          },
+        }),
+      );
     }
 
     const countGuardian = await this.repository.count({

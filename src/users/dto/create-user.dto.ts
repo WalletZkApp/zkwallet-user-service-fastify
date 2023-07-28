@@ -68,4 +68,5 @@ export class CreateUserDto {
 
   hash?: string | null;
   walletAddress?: string | null;
+  profileUrl?: string | null;
 }
