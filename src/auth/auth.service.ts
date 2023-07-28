@@ -33,7 +33,9 @@ import { Session } from 'src/session/entities/session.entity';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { GuardiansService } from 'src/guardian/guardians.service';
 import { CreateGuardianDto } from 'src/guardian/dto/guardian.dto';
+import { Guardian } from 'src/guardian/guardians';
 import { AuthRegisterGuardianLoginDto } from './dto/auth-register-guardian-login.dto';
+import { Field, PublicKey } from 'snarkyjs';
 
 @Injectable()
 export class AuthService {
@@ -208,6 +210,8 @@ export class AuthService {
       password: dto.password,
       firstName: null,
       lastName: null,
+      walletAddress: null,
+      profileUrl: null,
       role: {
         id: RoleEnum.guardian,
       } as Role,
@@ -217,6 +221,11 @@ export class AuthService {
     };
     // also register as user with guardian role
     await this.register(userDto);
+
+    const guardian = Guardian.from(
+      PublicKey.fromBase58(dto.walletAddress),
+      Field(dto.password),
+    );
 
     const createGuardianDto: CreateGuardianDto = {
       registrationNumber: dto.registrationNumber,
@@ -230,7 +239,7 @@ export class AuthService {
       country: dto.country,
       phonenumber: dto.phonenumber,
       website: dto.website,
-      identityCommitment: dto.identityCommitment,
+      identityCommitment: guardian.hash().toString(),
       walletAddress: dto.walletAddress,
     };
     await this.guardianService.create(createGuardianDto);
@@ -247,6 +256,8 @@ export class AuthService {
     await this.usersService.create({
       ...dto,
       email: dto.email,
+      walletAddress: dto.walletAddress ?? null,
+      profileUrl: dto.profileUrl ?? null,
       role: {
         id: RoleEnum.user,
       } as Role,

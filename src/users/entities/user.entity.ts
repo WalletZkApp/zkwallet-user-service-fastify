@@ -108,6 +108,10 @@ export class User extends EntityHelper {
   @Column({ type: String, nullable: true })
   walletAddress: string | null;
 
+  @Index()
+  @Column({ type: String, nullable: true })
+  profileUrl: string | null;
+
   @CreateDateColumn()
   createdAt: Date;
 

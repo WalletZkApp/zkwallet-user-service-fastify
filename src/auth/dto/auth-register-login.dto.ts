@@ -35,6 +35,14 @@ export class AuthRegisterLoginDto {
   @IsOptional()
   lastName: string | null;
 
+  @ApiProperty()
+  @IsOptional()
+  walletAddress: string | null;
+
+  @ApiProperty()
+  @IsOptional()
+  profileUrl: string | null;
+
   role: Role | null;
   status: Status | null;
 }

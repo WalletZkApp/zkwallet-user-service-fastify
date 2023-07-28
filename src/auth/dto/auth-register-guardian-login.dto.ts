@@ -23,6 +23,7 @@ export class AuthRegisterGuardianLoginDto {
   email: string;
 
   @ApiProperty()
+  @IsNotEmpty()
   @MinLength(6)
   password: string;
 
@@ -86,13 +87,9 @@ export class AuthRegisterGuardianLoginDto {
   status?: Status | null;
 
   @ApiProperty()
-  @IsOptional()
-  identityCommitment?: string;
-
-  @ApiProperty()
   @IsNotEmpty()
   @Validate(IsNotExist, ['Guardian'], {
     message: 'walletAddressAlreadyExists',
   })
-  walletAddress?: string | null;
+  walletAddress: string;
 }
