@@ -5,6 +5,7 @@ import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
 import bs58check from 'bs58check';
 import Client from 'mina-signer';
+import { Buffer } from 'safe-buffer';
 import {
   AccountUpdate,
   Mina,
@@ -110,6 +111,7 @@ export class OnchainService {
   async createNewWallet(): Promise<{
     priKey: string;
     pubKey: string;
+    seed: string;
     hdIndex: number;
   }> {
     const seed = bip39.generateMnemonic();
@@ -126,6 +128,7 @@ export class OnchainService {
     return {
       priKey: privateKey,
       pubKey: publicKey,
+      seed: seed,
       hdIndex: 0,
     };
   }
