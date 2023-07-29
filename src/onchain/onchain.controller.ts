@@ -44,4 +44,10 @@ export class OnchainController {
   async accountIsNew(@Query('account') account: string) {
     return await this.onchainService.accountIsNew(account);
   }
+
+  @Get('createAccount')
+  @HttpCode(HttpStatus.OK)
+  async createNewWallet() {
+    return await this.onchainService.createNewWallet();
+  }
 }
