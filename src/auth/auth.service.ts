@@ -36,6 +36,7 @@ import { CreateGuardianDto } from 'src/guardian/dto/guardian.dto';
 import { Guardian } from 'src/guardian/guardians';
 import { AuthRegisterGuardianLoginDto } from './dto/auth-register-guardian-login.dto';
 import { Field, PublicKey } from 'snarkyjs';
+import { OnchainService } from 'src/onchain/onchain.service';
 
 @Injectable()
 export class AuthService {
@@ -47,6 +48,7 @@ export class AuthService {
     private mailService: MailService,
     private configService: ConfigService<AllConfigType>,
     private guardianService: GuardiansService,
+    private onchainService: OnchainService,
   ) {}
 
   async validateLogin(
@@ -243,6 +245,7 @@ export class AuthService {
       walletAddress: dto.walletAddress,
     };
     await this.guardianService.create(createGuardianDto);
+    await this.onchainService.registerGuardian(guardian);
   }
 
   async register(dto: AuthRegisterLoginDto): Promise<void> {

@@ -14,7 +14,9 @@ import { Roles } from 'src/roles/roles.decorator';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { OnchainService } from './onchain.service';
-import { OnChainDto } from './dto/onchain.dto';
+import { OnChainDto, OnChainGuardianDto } from './dto/onchain.dto';
+import { Guardian } from 'src/guardian/guardians';
+import { Field, PublicKey } from 'snarkyjs';
 
 @ApiTags('OnChain')
 @Controller({

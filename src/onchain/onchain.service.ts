@@ -8,13 +8,21 @@ import {
   PublicKey,
   PrivateKey,
   fetchAccount,
+  Field,
+  MerkleTree,
 } from 'snarkyjs';
 import { AllConfigType } from 'src/config/config.type';
+import { Guardian, GuardianZkApp } from 'src/guardian/guardians';
+
+const GUARDIAN_ZKAPP_ADDRESS: PublicKey = PublicKey.empty();
 
 @Injectable()
 export class OnchainService {
   private privateKey: PrivateKey;
   private publicKey: PublicKey;
+  private guardianZkApp: GuardianZkApp;
+  private counter: number;
+  private guardianTree: MerkleTree;
 
   constructor(
     private configService: ConfigService<AllConfigType>,
@@ -31,8 +39,15 @@ export class OnchainService {
     );
     Mina.setActiveInstance(berkeley);
 
+    this.guardianZkApp = new GuardianZkApp(GUARDIAN_ZKAPP_ADDRESS);
     this.privateKey = PrivateKey.fromBase58(privateKeyFromConf);
     this.publicKey = this.privateKey.toPublicKey();
+    this.counter = 0;
+    this.guardianTree = new MerkleTree(64);
+  }
+
+  getCounter(): number {
+    return this.counter;
   }
 
   async getBalance(account: string): Promise<string> {
@@ -56,6 +71,23 @@ export class OnchainService {
     } else {
       return false;
     }
+  }
+
+  async registerGuardian(guardian: Guardian): Promise<boolean> {
+    this.guardianTree.setLeaf(BigInt(this.counter), guardian.hash());
+
+    const tx = await Mina.transaction({ sender: this.publicKey }, () => {
+      this.guardianZkApp.addGuardian(
+        this.publicKey,
+        guardian,
+        this.guardianTree.getRoot(),
+      );
+    });
+    await tx.prove();
+    await tx.sign([this.privateKey]).send();
+
+    this.counter += 1;
+    return true;
   }
 
   async sendMina(receiver: string, amount: number): Promise<boolean> {

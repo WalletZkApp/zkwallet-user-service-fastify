@@ -11,3 +11,13 @@ export class OnChainDto {
   @IsNotEmpty()
   amount: number;
 }
+
+export class OnChainGuardianDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  publicKey: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  nullifierMessage: string;
+}

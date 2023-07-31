@@ -13,6 +13,7 @@ import { IsNotExist } from 'src/utils/validators/is-not-exists.validator';
 import { SessionModule } from 'src/session/session.module';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { GuardiansModule } from 'src/guardian/guardians.module';
+import { OnchainModule } from 'src/onchain/onchain.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { GuardiansModule } from 'src/guardian/guardians.module';
     MailModule,
     JwtModule.register({}),
     GuardiansModule,
+    OnchainModule,
   ],
   controllers: [AuthController],
   providers: [
