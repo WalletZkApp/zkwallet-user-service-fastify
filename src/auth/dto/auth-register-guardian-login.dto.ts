@@ -23,9 +23,9 @@ export class AuthRegisterGuardianLoginDto {
   email: string;
 
   @ApiProperty()
-  @IsNotEmpty()
+  @IsOptional()
   @MinLength(6)
-  password: string;
+  password: string | null;
 
   @ApiProperty()
   @IsNotEmpty()

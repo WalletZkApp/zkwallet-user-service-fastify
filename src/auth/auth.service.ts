@@ -207,26 +207,33 @@ export class AuthService {
   }
 
   async registerGuardian(dto: AuthRegisterGuardianLoginDto): Promise<void> {
-    const userDto: AuthRegisterLoginDto = {
-      email: dto.email,
-      password: dto.password,
-      firstName: null,
-      lastName: null,
-      walletAddress: null,
-      profileUrl: null,
-      role: {
-        id: RoleEnum.guardian,
-      } as Role,
-      status: {
-        id: StatusEnum.active,
-      } as Status,
-    };
-    // also register as user with guardian role
-    await this.register(userDto);
+    let nullifierMessage: Field;
+    if (dto.password) {
+      const userDto: AuthRegisterLoginDto = {
+        email: dto.email,
+        password: dto.password,
+        firstName: null,
+        lastName: null,
+        walletAddress: null,
+        profileUrl: null,
+        role: {
+          id: RoleEnum.guardian,
+        } as Role,
+        status: {
+          id: StatusEnum.active,
+        } as Status,
+      };
+      // also register as user with guardian role
+      await this.register(userDto);
+      nullifierMessage = Field(dto.password);
+    } else {
+      nullifierMessage = Field('guardian');
+    }
+    
 
     const guardian = Guardian.from(
       PublicKey.fromBase58(dto.walletAddress),
-      Field(dto.password),
+      nullifierMessage,
     );
 
     const createGuardianDto: CreateGuardianDto = {
