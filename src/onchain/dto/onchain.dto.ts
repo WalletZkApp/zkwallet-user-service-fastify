@@ -21,3 +21,9 @@ export class OnChainGuardianDto {
   @IsNotEmpty()
   nullifierMessage: string;
 }
+
+export class OnChainSmartWalletDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  otp: string;
+}
