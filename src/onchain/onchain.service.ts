@@ -221,9 +221,7 @@ export class OnchainService {
     recoveryZkAppAddress = recoveryZkAppPrivateKey.toPublicKey();
     recoveryZkApp = new RecoveryZkApp(recoveryZkAppAddress);
 
-    this.sendMina(zkAppAddress.toBase58(), 1);
-
-    const txn = await Mina.transaction(zkAppAddress, () => {
+    const txn = await Mina.transaction(this.publicKey, () => {
       walletStatesZkApp.deploy({ zkappKey: walletStatesZkAppPrivateKey });
       walletStatesZkApp.owner.set(zkAppAddress);
       walletStatesZkApp.currentPeriodEnd.set(defaultCurrentPeriodEnd);
@@ -236,7 +234,7 @@ export class OnchainService {
       zkApp.owner.set(recoveryZkAppAddress);
     });
     await txn.prove();
-    await txn.sign([zkAppPrivateKey]).send();
+    await txn.sign([this.privateKey, zkAppPrivateKey]).send();
 
     return {
       zkAppPrivateKey: zkAppPrivateKey.toBase58(),
