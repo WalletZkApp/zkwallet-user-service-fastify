@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/users.service';
-
+import * as bip39 from 'bip39';
+import * as bip32 from 'bip32';
+import bs58check from 'bs58check';
+import Client from 'mina-signer';
+import { Buffer } from 'safe-buffer';
 import {
   AccountUpdate,
   Mina,
@@ -133,5 +137,58 @@ export class OnchainService {
     await tx.sign([this.privateKey]).send();
 
     return true;
+  }
+
+  // ref: https://github.com/aurowallet/auro-wallet-browser-extension/blob/3a5fe2b5370bbf18293cb7de48b33bb96b7b4730/src/background/accountService.js#L42
+  async createNewWallet(): Promise<{
+    priKey: string;
+    pubKey: string;
+    seed: string;
+    hdIndex: number;
+  }> {
+    const seed = bip39.generateMnemonic();
+    const bufferSeed = bip39.mnemonicToSeedSync(seed);
+    const masterNode = bip32.fromSeed(bufferSeed);
+    let hdPath = this.getHDpath(0);
+    const child0 = masterNode.derivePath(hdPath) as any;
+    child0.privateKey[0] &= 0x3f;
+    const childPrivateKey = this.reverse(child0.privateKey);
+    const privateKeyHex = `5a01${childPrivateKey.toString('hex')}`;
+    const privateKey = bs58check.encode(Buffer.from(privateKeyHex, 'hex'));
+    const client = new Client({ network: 'mainnet' });
+    const publicKey = client.derivePublicKey(privateKey);
+    return {
+      priKey: privateKey,
+      pubKey: publicKey,
+      seed: seed,
+      hdIndex: 0,
+    };
+  }
+
+  // ref: https://github.com/aurowallet/auro-wallet-browser-extension/blob/3a5fe2b5370bbf18293cb7de48b33bb96b7b4730/src/background/accountService.js#L13
+  private getHDpath(account = 0) {
+    let purpse = 44;
+    let index = 0;
+    let charge = 0;
+    let hdpath =
+      'm/' +
+      purpse +
+      "'/" +
+      12586 +
+      "'/" +
+      account +
+      "'/" +
+      charge +
+      '/' +
+      index;
+    return hdpath;
+  }
+  // ref: https://github.com/aurowallet/auro-wallet-browser-extension/blob/3a5fe2b5370bbf18293cb7de48b33bb96b7b4730/src/background/accountService.js#L35
+  private reverse(bytes) {
+    const reversed = new Buffer(bytes.length);
+    for (let i = bytes.length; i > 0; i--) {
+      reversed[bytes.length - i] = bytes[i - 1];
+    }
+    return reversed;
   }
 }
