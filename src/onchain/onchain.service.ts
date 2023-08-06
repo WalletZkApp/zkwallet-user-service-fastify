@@ -14,9 +14,15 @@ import {
   fetchAccount,
   Field,
   MerkleTree,
+  UInt64,
 } from 'snarkyjs';
 import { AllConfigType } from 'src/config/config.type';
-import { Guardian, GuardianZkApp } from 'src/guardian/guardians';
+import { Guardian, GuardianZkApp } from 'src/contracts/src/guardians';
+import { WalletStateZkApp, WalletZkApp } from 'src/contracts/src/wallet';
+import { RecoveryZkApp } from 'src/contracts/src/recovery';
+import { DEFAULT_PERIOD } from 'src/contracts/src/constant';
+import { TokenGenerator } from 'totp-generator-ts';
+import { Otp } from 'src/contracts/src/otps/otp';
 
 const GUARDIAN_ZKAPP_ADDRESS: PublicKey = PublicKey.empty();
 
@@ -163,6 +169,80 @@ export class OnchainService {
       seed: seed,
       hdIndex: 0,
     };
+  }
+
+  async createSmartWallet(totpSecret: string): Promise<{
+    zkAppPrivateKey: string;
+    walletStatesZkAppPrivateKey: string;
+    recoveryZkAppPrivateKey: string;
+  }> {
+    let walletStatesZkApp: WalletStateZkApp,
+    walletStatesZkAppAddress: PublicKey,
+    walletStatesZkAppPrivateKey: PrivateKey,
+    recoveryZkAppAddress: PublicKey,
+    recoveryZkAppPrivateKey: PrivateKey,
+    recoveryZkApp: RecoveryZkApp,
+    zkAppAddress: PublicKey,
+    zkAppPrivateKey: PrivateKey,
+    zkApp: WalletZkApp;
+
+    let otpTree = new MerkleTree(32);
+    let time;
+    const startTime = Math.floor(Date.now() / 30000 - 1) * 30000;
+
+    for (let i = 0; i < 32; i++) {
+      time = startTime + i * 30000;
+      const tokenGen = new TokenGenerator({
+        algorithm: 'SHA-512',
+        period: 60,
+        digits: 8,
+        timestamp: time,
+      });
+      const token = tokenGen.getToken(totpSecret);
+      const otp = Otp.from(UInt64.from(time), Field(token));
+      otpTree.setLeaf(BigInt(i), otp.hash());
+    }
+
+    let defaultCurrentPeriodEnd = UInt64.from(Date.now() - DEFAULT_PERIOD);
+
+    await RecoveryZkApp.compile();
+    await WalletStateZkApp.compile();
+    await WalletZkApp.compile();
+
+    zkAppPrivateKey = PrivateKey.random();
+    zkAppAddress = zkAppPrivateKey.toPublicKey();
+    zkApp = new WalletZkApp(zkAppAddress);
+
+    walletStatesZkAppPrivateKey = PrivateKey.random();
+    walletStatesZkAppAddress = walletStatesZkAppPrivateKey.toPublicKey();
+    walletStatesZkApp = new WalletStateZkApp(walletStatesZkAppAddress);
+
+    recoveryZkAppPrivateKey = PrivateKey.random();
+    recoveryZkAppAddress = recoveryZkAppPrivateKey.toPublicKey();
+    recoveryZkApp = new RecoveryZkApp(recoveryZkAppAddress);
+
+    this.sendMina(zkAppAddress.toBase58(), 1);
+
+    const txn = await Mina.transaction(zkAppAddress, () => {
+      walletStatesZkApp.deploy({ zkappKey: walletStatesZkAppPrivateKey });
+      walletStatesZkApp.owner.set(zkAppAddress);
+      walletStatesZkApp.currentPeriodEnd.set(defaultCurrentPeriodEnd);
+
+      recoveryZkApp.deploy({ zkappKey: recoveryZkAppPrivateKey });
+      recoveryZkApp.owner.set(zkAppAddress);
+
+      zkApp.deploy({ zkappKey: zkAppPrivateKey });
+      zkApp.committedOtps.set(otpTree.getRoot());
+      zkApp.owner.set(recoveryZkAppAddress);
+    });
+    await txn.prove();
+    await txn.sign([zkAppPrivateKey]).send();
+
+    return {
+      zkAppPrivateKey: zkAppPrivateKey.toBase58(),
+      walletStatesZkAppPrivateKey: walletStatesZkAppPrivateKey.toBase58(),
+      recoveryZkAppPrivateKey: recoveryZkAppPrivateKey.toBase58(),
+    }
   }
 
   // ref: https://github.com/aurowallet/auro-wallet-browser-extension/blob/3a5fe2b5370bbf18293cb7de48b33bb96b7b4730/src/background/accountService.js#L13

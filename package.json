@@ -65,9 +65,11 @@
     "rimraf": "5.0.1",
     "rxjs": "7.8.1",
     "snarkyjs": "^0.12.1",
+    "snarkyjs-pack": "^0.2.3-beta4",
     "source-map-support": "0.5.21",
     "stripe": "^12.12.0",
     "swagger-ui-express": "5.0.0",
+    "totp-generator-ts": "^1.0.3",
     "twitter": "1.7.1",
     "typeorm": "0.3.17"
   },
