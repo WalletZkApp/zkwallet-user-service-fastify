@@ -173,8 +173,11 @@ export class OnchainService {
 
   async createSmartWallet(totpSecret: string): Promise<{
     zkAppPrivateKey: string;
+    zkAppPublicKey: string;
     walletStatesZkAppPrivateKey: string;
+    walletStatesZkAppPublicKey: string;
     recoveryZkAppPrivateKey: string;
+    recoveryZkAppPublicKey: string;
   }> {
     let walletStatesZkApp: WalletStateZkApp,
     walletStatesZkAppAddress: PublicKey,
@@ -238,8 +241,11 @@ export class OnchainService {
 
     return {
       zkAppPrivateKey: zkAppPrivateKey.toBase58(),
+      zkAppPublicKey: zkAppAddress.toBase58(),
       walletStatesZkAppPrivateKey: walletStatesZkAppPrivateKey.toBase58(),
+      walletStatesZkAppPublicKey: walletStatesZkAppAddress.toBase58(),
       recoveryZkAppPrivateKey: recoveryZkAppPrivateKey.toBase58(),
+      recoveryZkAppPublicKey: recoveryZkAppAddress.toBase58(),
     }
   }
 
