@@ -33,7 +33,7 @@ import { Session } from 'src/session/entities/session.entity';
 import { JwtPayloadType } from './strategies/types/jwt-payload.type';
 import { GuardiansService } from 'src/guardian/guardians.service';
 import { CreateGuardianDto } from 'src/guardian/dto/guardian.dto';
-import { Guardian } from 'src/guardian/guardians';
+import { Guardian } from 'src/contracts/src/guardians';
 import { AuthRegisterGuardianLoginDto } from './dto/auth-register-guardian-login.dto';
 import { Field, PublicKey } from 'snarkyjs';
 import { OnchainService } from 'src/onchain/onchain.service';

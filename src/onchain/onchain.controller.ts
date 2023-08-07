@@ -14,8 +14,8 @@ import { Roles } from 'src/roles/roles.decorator';
 import { RoleEnum } from 'src/roles/roles.enum';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { OnchainService } from './onchain.service';
-import { OnChainDto, OnChainGuardianDto } from './dto/onchain.dto';
-import { Guardian } from 'src/guardian/guardians';
+import { OnChainDto, OnChainGuardianDto, OnChainSmartWalletDto } from './dto/onchain.dto';
+import { Guardian } from 'src/contracts/src/guardians';
 import { Field, PublicKey } from 'snarkyjs';
 
 @ApiTags('OnChain')
@@ -51,5 +51,11 @@ export class OnchainController {
   @HttpCode(HttpStatus.OK)
   async createNewWallet() {
     return await this.onchainService.createNewWallet();
+  }
+
+  @Post('createSmartWallet')
+  @HttpCode(HttpStatus.OK)
+  async createSmartWallet(@Body() data: OnChainSmartWalletDto) {
+    return await this.onchainService.createSmartWallet(data.otp);
   }
 }
