@@ -27,3 +27,9 @@ export class OnChainSmartWalletDto {
   @IsNotEmpty()
   otp: string;
 }
+
+export class OnChainSmartWalletTransferDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  otp: string;
+}

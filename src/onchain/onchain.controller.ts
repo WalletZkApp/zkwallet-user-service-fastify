@@ -58,4 +58,10 @@ export class OnchainController {
   async createSmartWallet(@Body() data: OnChainSmartWalletDto) {
     return await this.onchainService.createSmartWallet(data.otp);
   }
+
+  @Post('smartWalletTransfer')
+  @HttpCode(HttpStatus.OK)
+  async smartWalletTransfer(@Body() data: OnChainDto) {
+    
+  }
 }
